@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NutriCoach — Eat Smart, Level Up</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="#" class="logo">🥑 NutriCoach</a>
+      <ul class="nav-links">
+        <li><a href="#dashboard">Dashboard</a></li>
+        <li><a href="#challenges">Challenges</a></li>
+        <li><a href="#coach">Coach</a></li>
+        <li><a href="#collection">Collection</a></li>
+      </ul>
+      <button class="mobile-menu-btn" aria-label="Toggle navigation menu">☰</button>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero" id="hero">
+    <div class="container hero-content">
+      <div class="hero-badge">🏆 #1 Nutrition Coach App</div>
+      <h1>Eat Smart.<br/>Level Up. <span class="hero-emoji">🥗</span></h1>
+      <p class="hero-subtitle">
+        Track your meals, complete challenges, collect cute characters, 
+        and build healthy eating habits — the fun way.
+      </p>
+      <button class="btn btn-primary btn-lg btn-glow" id="heroStartBtn">
+        Start My Journey 🚀
+      </button>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-num">50K+</span>
+          <span class="hero-stat-label">Active Users</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-num">4.9 ★</span>
+          <span class="hero-stat-label">App Rating</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-num">1M+</span>
+          <span class="hero-stat-label">Meals Logged</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Onboarding Quiz Modal -->
+  <div class="modal-overlay" id="quizModal">
+    <div class="modal">
+      <div class="quiz-progress">
+        <div class="quiz-progress-bar" id="quizProgressBar"></div>
+      </div>
+      <div class="quiz-step active" data-step="1">
+        <div class="quiz-emoji">👋</div>
+        <h2>What's your goal?</h2>
+        <div class="quiz-options">
+          <button class="quiz-option" data-value="lose">🏃 Lose Weight</button>
+          <button class="quiz-option" data-value="gain">💪 Build Muscle</button>
+          <button class="quiz-option" data-value="maintain">⚖️ Eat Balanced</button>
+          <button class="quiz-option" data-value="energy">⚡ More Energy</button>
+        </div>
+      </div>
+      <div class="quiz-step" data-step="2">
+        <div class="quiz-emoji">🍽️</div>
+        <h2>How many meals a day?</h2>
+        <div class="quiz-options">
+          <button class="quiz-option" data-value="2">2 meals</button>
+          <button class="quiz-option" data-value="3">3 meals</button>
+          <button class="quiz-option" data-value="4">3 + snacks</button>
+          <button class="quiz-option" data-value="5">5+ small meals</button>
+        </div>
+      </div>
+      <div class="quiz-step" data-step="3">
+        <div class="quiz-emoji">🚫</div>
+        <h2>Any dietary restrictions?</h2>
+        <div class="quiz-options multi">
+          <button class="quiz-option toggle" data-value="vegan">🌱 Vegan</button>
+          <button class="quiz-option toggle" data-value="gf">🌾 Gluten-Free</button>
+          <button class="quiz-option toggle" data-value="dairy">🥛 Dairy-Free</button>
+          <button class="quiz-option toggle" data-value="none">✅ None</button>
+        </div>
+        <button class="btn btn-primary btn-lg" id="quizFinish">Build My Plan 🎯</button>
+      </div>
+      <div class="quiz-step" data-step="4">
+        <div class="quiz-emoji building-anim">🧠</div>
+        <h2>Building your personalized plan...</h2>
+        <div class="loading-bar-container">
+          <div class="loading-bar" id="loadingBar"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard Section -->
+  <section class="dashboard" id="dashboard">
+    <div class="container">
+      <div class="dash-header">
+        <div>
+          <h2>Today's Progress</h2>
+          <p class="dash-date" id="dashDate"></p>
+        </div>
+        <div class="streak-badge" id="streakBadge">
+          🔥 <span id="streakCount">0</span> Day Streak
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <!-- Character Card -->
+        <div class="card character-card">
+          <div class="character-container" id="characterContainer">
+            <div class="character-fill" id="characterFill"></div>
+            <div class="character-emoji" id="characterEmoji">🐼</div>
+          </div>
+          <div class="character-info">
+            <h3 id="characterName">Panda Pete</h3>
+            <p class="character-level">Level <span id="characterLevel">1</span></p>
+          </div>
+          <div class="progress-ring-label">
+            <span id="progressPercent">0</span>% fed
+          </div>
+        </div>
+
+        <!-- Macro Tracker -->
+        <div class="card macro-card">
+          <h3>Daily Macros</h3>
+          <div class="macro-bars">
+            <div class="macro-row">
+              <span class="macro-label">🥩 Protein</span>
+              <div class="macro-bar-track">
+                <div class="macro-bar-fill protein-fill" id="proteinBar" style="width: 0%"></div>
+              </div>
+              <span class="macro-value" id="proteinVal">0/120g</span>
+            </div>
+            <div class="macro-row">
+              <span class="macro-label">🍞 Carbs</span>
+              <div class="macro-bar-track">
+                <div class="macro-bar-fill carbs-fill" id="carbsBar" style="width: 0%"></div>
+              </div>
+              <span class="macro-value" id="carbsVal">0/250g</span>
+            </div>
+            <div class="macro-row">
+              <span class="macro-label">🥑 Fats</span>
+              <div class="macro-bar-track">
+                <div class="macro-bar-fill fats-fill" id="fatsBar" style="width: 0%"></div>
+              </div>
+              <span class="macro-value" id="fatsVal">0/65g</span>
+            </div>
+          </div>
+          <div class="calorie-ring">
+            <svg viewBox="0 0 120 120" class="ring-svg">
+              <circle cx="60" cy="60" r="52" class="ring-bg" />
+              <circle cx="60" cy="60" r="52" class="ring-progress" id="calorieRing" />
+            </svg>
+            <div class="ring-text">
+              <span class="ring-num" id="calorieNum">0</span>
+              <span class="ring-label">/ 2000 kcal</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Log Buttons -->
+      <div class="quick-log">
+        <h3>Quick Log a Meal</h3>
+        <div class="log-buttons">
+          <button class="log-btn" data-meal="breakfast" data-cal="400" data-p="25" data-c="50" data-f="12">
+            <span class="log-icon">🥣</span>
+            <span>Breakfast</span>
+          </button>
+          <button class="log-btn" data-meal="lunch" data-cal="600" data-p="35" data-c="70" data-f="18">
+            <span class="log-icon">🥗</span>
+            <span>Lunch</span>
+          </button>
+          <button class="log-btn" data-meal="dinner" data-cal="650" data-p="40" data-c="60" data-f="22">
+            <span class="log-icon">🍲</span>
+            <span>Dinner</span>
+          </button>
+          <button class="log-btn" data-meal="snack" data-cal="200" data-p="10" data-c="25" data-f="8">
+            <span class="log-icon">🍎</span>
+            <span>Snack</span>
+          </button>
+          <button class="log-btn" data-meal="smoothie" data-cal="250" data-p="15" data-c="35" data-f="5">
+            <span class="log-icon">🥤</span>
+            <span>Smoothie</span>
+          </button>
+          <button class="log-btn" data-meal="treat" data-cal="350" data-p="5" data-c="45" data-f="15">
+            <span class="log-icon">🍩</span>
+            <span>Treat</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Meal Log Feed -->
+      <div class="card meal-feed-card">
+        <h3>Today's Meals</h3>
+        <div class="meal-feed" id="mealFeed">
+          <p class="empty-feed">No meals logged yet. Tap a button above to start! 👆</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Challenges Section -->
+  <section class="challenges-section" id="challenges">
+    <div class="container">
+      <h2 class="section-title">🏅 Active Challenges</h2>
+      <p class="section-subtitle">Complete challenges to earn XP and unlock new characters!</p>
+      <div class="challenges-grid">
+        <div class="challenge-card" data-challenge="greens">
+          <div class="challenge-icon">🥦</div>
+          <div class="challenge-info">
+            <h4>Green Machine</h4>
+            <p>Log 5 meals with vegetables this week</p>
+            <div class="challenge-progress-track">
+              <div class="challenge-progress-fill" id="greensProgress" style="width: 40%"></div>
+            </div>
+            <span class="challenge-status">2 / 5 completed</span>
+          </div>
+          <div class="challenge-xp">+150 XP</div>
+        </div>
+        <div class="challenge-card" data-challenge="protein">
+          <div class="challenge-icon">💪</div>
+          <div class="challenge-info">
+            <h4>Protein Power</h4>
+            <p>Hit your protein goal 3 days in a row</p>
+            <div class="challenge-progress-track">
+              <div class="challenge-progress-fill" id="proteinProgress" style="width: 66%"></div>
+            </div>
+            <span class="challenge-status">2 / 3 days</span>
+          </div>
+          <div class="challenge-xp">+200 XP</div>
+        </div>
+        <div class="challenge-card" data-challenge="streak">
+          <div class="challenge-icon">🔥</div>
+          <div class="challenge-info">
+            <h4>7-Day Streak</h4>
+            <p>Log at least one meal every day for a week</p>
+            <div class="challenge-progress-track">
+              <div class="challenge-progress-fill" id="streakProgress" style="width: 57%"></div>
+            </div>
+            <span class="challenge-status">4 / 7 days</span>
+          </div>
+          <div class="challenge-xp">+300 XP</div>
+        </div>
+        <div class="challenge-card locked">
+          <div class="challenge-icon">🔒</div>
+          <div class="challenge-info">
+            <h4>Sugar Detox</h4>
+            <p>Reach Level 3 to unlock</p>
+            <div class="challenge-progress-track">
+              <div class="challenge-progress-fill" style="width: 0%"></div>
+            </div>
+            <span class="challenge-status">Locked</span>
+          </div>
+          <div class="challenge-xp">+500 XP</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Coach Chat Section -->
+  <section class="coach-section" id="coach">
+    <div class="container">
+      <h2 class="section-title">🤖 Ask Your Coach</h2>
+      <p class="section-subtitle">Real-time nutritional advice, powered by AI.</p>
+      <div class="chat-container">
+        <div class="chat-messages" id="chatMessages">
+          <div class="message bot-message">
+            <span class="message-avatar">🥑</span>
+            <div class="message-bubble">
+              Hey there! I'm your NutriCoach. Ask me anything — like "What should I eat before a workout?" or "Is oat milk better than almond milk?" 🌟
+            </div>
+          </div>
+        </div>
+        <form class="chat-input-form" id="chatForm">
+          <label for="chatInput" class="sr-only">Type your nutrition question</label>
+          <input type="text" id="chatInput" class="chat-input" placeholder="Ask me anything about nutrition..." autocomplete="off" />
+          <button type="submit" class="btn btn-primary">Send</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Character Collection Section -->
+  <section class="collection-section" id="collection">
+    <div class="container">
+      <h2 class="section-title">🎨 Your Collection</h2>
+      <p class="section-subtitle">Earn XP to unlock adorable characters. Each one has a nutrition superpower!</p>
+      <div class="collection-grid">
+        <div class="collection-item unlocked active" data-char="panda" data-name="Panda Pete" data-emoji="🐼">
+          <div class="collection-char">🐼</div>
+          <span class="collection-name">Panda Pete</span>
+          <span class="collection-power">Balance Master</span>
+        </div>
+        <div class="collection-item unlocked" data-char="fox" data-name="Foxy Fiber" data-emoji="🦊">
+          <div class="collection-char">🦊</div>
+          <span class="collection-name">Foxy Fiber</span>
+          <span class="collection-power">Fiber Expert</span>
+        </div>
+        <div class="collection-item locked" data-char="owl">
+          <div class="collection-char">🦉</div>
+          <span class="collection-name">Owl Omega</span>
+          <span class="collection-lock">🔒 Level 3</span>
+        </div>
+        <div class="collection-item locked" data-char="bunny">
+          <div class="collection-char">🐰</div>
+          <span class="collection-name">Bunny Boost</span>
+          <span class="collection-lock">🔒 Level 5</span>
+        </div>
+        <div class="collection-item locked" data-char="bear">
+          <div class="collection-char">🐻</div>
+          <span class="collection-name">Bear Bulk</span>
+          <span class="collection-lock">🔒 Level 7</span>
+        </div>
+        <div class="collection-item locked" data-char="dragon">
+          <div class="collection-char">🐉</div>
+          <span class="collection-name">Dragon Diet</span>
+          <span class="collection-lock">🔒 Level 10</span>
+        </div>
+      </div>
+
+      <!-- XP Bar -->
+      <div class="xp-bar-container">
+        <div class="xp-info">
+          <span>Level <span id="xpLevel">1</span></span>
+          <span><span id="xpCurrent">0</span> / <span id="xpNeeded">500</span> XP</span>
+        </div>
+        <div class="xp-bar-track">
+          <div class="xp-bar-fill" id="xpBar" style="width: 0%"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tips Carousel -->
+  <section class="tips-section">
+    <div class="container">
+      <h2 class="section-title">💡 Daily Tips</h2>
+      <div class="tips-carousel" id="tipsCarousel">
+        <div class="tip-card active">
+          <div class="tip-icon">🥦</div>
+          <p>Eating greens with every meal can boost your fiber intake by 40%. Your gut will thank you!</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon">💧</div>
+          <p>Drinking water before meals can help you eat 75 fewer calories per meal. Small wins add up!</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon">🥜</div>
+          <p>A handful of nuts is one of the best snacks — packed with healthy fats, protein, and fiber.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon">🌙</div>
+          <p>Eating your last meal 2-3 hours before bed can improve sleep quality and digestion.</p>
+        </div>
+      </div>
+      <div class="tip-dots" id="tipDots"></div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <span class="logo">🥑 NutriCoach</span>
+      <p>Eat smart. Level up. Built at CBC Hackathon 2026.</p>
+    </div>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
