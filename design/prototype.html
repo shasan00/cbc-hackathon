@@ -1,0 +1,702 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=1200" />
+<title>MEAL QUEST — field guide v0.1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  /* GB-pocket inspired, warmed up */
+  --cream:#f5ecd0;
+  --paper:#ebdfba;
+  --paper-dark:#d8c896;
+  --ink:#2b2316;
+  --ink-soft:#4a3f2a;
+
+  --gb-darkest:#1a2f22;
+  --gb-dark:#2d5039;
+  --gb-mid:#5f8c4b;
+  --gb-light:#a9c472;
+  --gb-pale:#dfe9ba;
+
+  --sunset:#d87a3a;
+  --berry:#b84a5e;
+  --sky:#6ba4c9;
+  --gold:#e6b94a;
+  --rose:#e8b5b5;
+  --shadow:#7a6a48;
+
+  --screen-bevel: 0 0 0 3px var(--ink), 0 0 0 6px var(--paper), 0 0 0 9px var(--ink);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--cream);color:var(--ink);font-family:'Pixelify Sans', monospace;font-size:18px;line-height:1.35;image-rendering:pixelated}
+
+/* global pixel-paper background: halftone dots + faint grid */
+body{
+  min-height:100vh;
+  background-image:
+    radial-gradient(var(--paper-dark) 1px, transparent 1px),
+    linear-gradient(var(--paper) 2px, transparent 2px),
+    linear-gradient(90deg, var(--paper) 2px, transparent 2px);
+  background-size: 8px 8px, 32px 32px, 32px 32px;
+  background-position: 0 0, 0 0, 0 0;
+}
+
+/* ---------- shared pixel chrome ---------- */
+.frame{
+  background:var(--cream);
+  border:3px solid var(--ink);
+  box-shadow:
+    4px 4px 0 0 var(--ink),
+    inset 0 0 0 3px var(--cream),
+    inset 0 0 0 6px var(--paper-dark);
+  padding:18px;
+  position:relative;
+}
+.frame::before{
+  /* corner rivets */
+  content:"";
+  position:absolute; inset:6px;
+  pointer-events:none;
+  background:
+    linear-gradient(var(--ink),var(--ink)) top left / 4px 4px no-repeat,
+    linear-gradient(var(--ink),var(--ink)) top right / 4px 4px no-repeat,
+    linear-gradient(var(--ink),var(--ink)) bottom left / 4px 4px no-repeat,
+    linear-gradient(var(--ink),var(--ink)) bottom right / 4px 4px no-repeat;
+}
+.frame--dark{
+  background:var(--gb-darkest);
+  color:var(--gb-pale);
+  box-shadow:
+    4px 4px 0 0 var(--ink),
+    inset 0 0 0 3px var(--gb-darkest),
+    inset 0 0 0 6px var(--gb-dark);
+}
+
+h1,h2,h3,.hud{font-family:'Press Start 2P', monospace;letter-spacing:.02em}
+.mono{font-family:'Silkscreen', monospace}
+
+/* ---------- top hud bar ---------- */
+.hud-bar{
+  display:grid;
+  grid-template-columns: auto 1fr auto auto auto;
+  gap:14px;
+  align-items:center;
+  padding:10px 16px;
+  margin:18px 24px;
+  background:var(--gb-darkest);
+  color:var(--gb-pale);
+  border:3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  font-family:'Press Start 2P', monospace;
+  font-size:10px;
+}
+.logo-mark{
+  width:28px;height:28px;display:inline-block;
+  background:
+    linear-gradient(var(--gb-light),var(--gb-light)) 0 0/4px 4px,
+    linear-gradient(var(--gb-mid),var(--gb-mid)) 0 0/4px 4px;
+  position:relative;
+  image-rendering:pixelated;
+}
+.logo{display:flex;align-items:center;gap:10px;color:var(--gb-pale)}
+.logo .title{color:var(--gold)}
+.hud .k{color:var(--gb-light);margin-right:6px}
+.hud .v{color:#fff}
+.hud-bar .sep{color:var(--gb-mid)}
+.heart{color:var(--berry)}
+
+/* ---------- main grid ---------- */
+.stage{
+  display:grid;
+  grid-template-columns: 300px 1fr 320px;
+  gap:22px;
+  padding: 8px 24px 32px;
+  align-items:start;
+}
+@media (max-width:1100px){ .stage{grid-template-columns:1fr} }
+
+/* ---------- character panel ---------- */
+.char-panel{
+  display:flex;flex-direction:column;gap:18px;
+}
+.char-window{
+  background:var(--gb-pale);
+  border:3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  padding:16px;
+  position:relative;
+}
+.char-window .label{
+  position:absolute; top:-12px; left:12px;
+  background:var(--gb-darkest); color:var(--gold);
+  padding:3px 8px; font-family:'Press Start 2P';font-size:8px;
+  border:3px solid var(--ink);
+}
+.scene{
+  position:relative;
+  height:200px;
+  overflow:hidden;
+  background:
+    linear-gradient(var(--gb-pale) 60%, var(--gb-light) 60% 78%, var(--gb-mid) 78%);
+  border:3px solid var(--ink);
+  image-rendering:pixelated;
+}
+.scene::before{
+  /* distant trees silhouette via repeating pixels */
+  content:"";
+  position:absolute; left:0;right:0;top:50%;height:18px;
+  background:
+    radial-gradient(circle at 10px 18px, var(--gb-mid) 8px, transparent 9px),
+    radial-gradient(circle at 34px 18px, var(--gb-mid) 10px, transparent 11px),
+    radial-gradient(circle at 70px 18px, var(--gb-mid) 7px, transparent 8px),
+    radial-gradient(circle at 100px 18px, var(--gb-mid) 11px, transparent 12px);
+  background-repeat:repeat-x;
+  background-size:140px 18px;
+  image-rendering:pixelated;
+}
+.scene::after{
+  /* pixel sun */
+  content:"";
+  position:absolute; top:14px; right:18px;
+  width:22px;height:22px;
+  background:var(--gold);
+  box-shadow:
+    -4px 0 0 var(--gold), 4px 0 0 var(--gold),
+    0 -4px 0 var(--gold), 0 4px 0 var(--gold),
+    0 0 0 2px var(--ink);
+  image-rendering:pixelated;
+}
+
+/* pixel character via SVG positioned in scene */
+.sprite{
+  position:absolute; left:50%; bottom:18px;
+  transform:translateX(-50%);
+  animation: bob 1.1s steps(2) infinite;
+}
+@keyframes bob{ 0%{transform:translate(-50%,0)} 50%{transform:translate(-50%,-3px)} 100%{transform:translate(-50%,0)} }
+
+.sparkle{position:absolute;font-family:'Press Start 2P';font-size:10px;color:var(--gold);animation:twinkle 1.6s steps(2) infinite}
+.sparkle.s1{top:22px;left:40px}
+.sparkle.s2{top:60px;right:56px;animation-delay:.5s}
+@keyframes twinkle{0%,100%{opacity:.2}50%{opacity:1}}
+
+/* character info block */
+.char-id{
+  display:flex;align-items:center;gap:12px;
+  margin-top:12px;padding-top:12px;border-top:3px dashed var(--ink-soft);
+}
+.char-id .name{font-family:'Press Start 2P';font-size:12px;color:var(--ink)}
+.char-id .role{font-size:14px;color:var(--ink-soft)}
+.lvl-chip{
+  background:var(--ink);color:var(--gold);
+  padding:4px 8px;font-family:'Press Start 2P';font-size:9px;
+  border:3px solid var(--ink); box-shadow: 3px 3px 0 var(--shadow);
+}
+
+/* stat rows like an RPG */
+.stats{display:grid;gap:8px}
+.stat{
+  display:grid;grid-template-columns: 70px 1fr auto;align-items:center;gap:8px;
+  font-family:'Silkscreen';font-size:12px;letter-spacing:.04em;
+}
+.stat .k{color:var(--ink-soft);text-transform:uppercase}
+.stat .v{color:var(--ink);font-weight:700}
+.bar{
+  height:12px;background:var(--paper-dark);
+  border:2px solid var(--ink);
+  position:relative;
+  box-shadow: inset 0 0 0 1px var(--cream);
+}
+.bar > i{
+  display:block;height:100%;
+  background:
+    linear-gradient(var(--gb-light),var(--gb-light)) 0 0/4px 4px,
+    var(--gb-mid);
+  border-right:2px solid var(--ink);
+}
+.bar.hp > i{background:linear-gradient(var(--berry),#e37a8a)}
+.bar.hydro > i{background:linear-gradient(var(--sky),#a5cde4)}
+.bar.fuel > i{background:linear-gradient(var(--sunset),#f2a06a)}
+.bar.xp > i{background:repeating-linear-gradient(90deg, var(--gold) 0 6px, #f5cb6a 6px 12px)}
+
+/* ---------- middle column ---------- */
+.board h2{
+  font-size:14px;color:var(--ink);margin-bottom:12px;
+  display:flex;align-items:center;gap:10px;
+}
+.board h2::before{
+  content:"";display:inline-block;width:14px;height:14px;
+  background:var(--gb-dark); border:2px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--shadow);
+}
+.today-strip{
+  display:flex;align-items:center;gap:8px;margin-bottom:18px;
+  padding:10px 14px;
+  background:var(--gb-dark);color:var(--gb-pale);
+  border:3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  font-family:'Silkscreen';font-size:12px;
+}
+.today-strip .pill{
+  background:var(--gold);color:var(--ink);
+  padding:2px 8px;border:2px solid var(--ink);
+  font-family:'Press Start 2P';font-size:8px;
+}
+.today-strip .tick{color:var(--gb-light)}
+
+.quest-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+@media (max-width:780px){.quest-grid{grid-template-columns:1fr}}
+
+.quest{
+  position:relative;
+  background:var(--cream);
+  border:3px solid var(--ink);
+  padding:14px 14px 14px 58px;
+  box-shadow: 4px 4px 0 var(--ink);
+  transition: transform .12s steps(2), box-shadow .12s steps(2);
+}
+.quest:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+.quest .icon{
+  position:absolute; left:-14px; top:14px;
+  width:44px;height:44px;
+  background:var(--gold);
+  border:3px solid var(--ink);
+  display:grid;place-items:center;
+  box-shadow: 3px 3px 0 var(--shadow);
+  font-family:'Press Start 2P';font-size:14px;color:var(--ink);
+}
+.quest.q-water .icon{background:var(--sky)}
+.quest.q-veg .icon{background:var(--gb-light)}
+.quest.q-move .icon{background:var(--sunset)}
+.quest.q-sleep .icon{background:#c7b3e0}
+.quest .title{font-family:'Press Start 2P';font-size:10px;margin-bottom:4px}
+.quest .sub{font-size:14px;color:var(--ink-soft);margin-bottom:10px}
+.quest .meta{
+  display:flex;justify-content:space-between;align-items:center;
+  font-family:'Silkscreen';font-size:11px;color:var(--ink-soft);
+}
+.quest .meta .xp{color:var(--sunset);font-weight:700}
+.quest .progress{
+  height:10px;background:var(--paper-dark);border:2px solid var(--ink);
+  margin:6px 0 10px;
+}
+.quest .progress > i{display:block;height:100%;background:var(--gb-mid)}
+.quest.q-water .progress > i{background:var(--sky)}
+.quest.q-veg .progress > i{background:var(--gb-mid)}
+.quest.q-move .progress > i{background:var(--sunset)}
+.quest.q-sleep .progress > i{background:#9a7dc2}
+
+.btnrow{display:flex;gap:6px;margin-top:2px}
+.btn{
+  font-family:'Press Start 2P';font-size:8px;
+  padding:6px 8px;background:var(--paper);
+  border:3px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  cursor:pointer; color:var(--ink);
+  transition:transform .08s steps(2);
+}
+.btn:hover{transform:translate(-1px,-1px)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.btn.go{background:var(--gb-mid);color:#fff}
+.btn.skip{background:var(--rose)}
+.btn.later{background:var(--sky);color:#fff}
+
+/* dialog / coach box */
+.dialog{
+  margin-top:22px;
+  display:grid; grid-template-columns: 72px 1fr; gap:14px;
+  background:var(--gb-darkest);
+  color:var(--gb-pale);
+  border:3px solid var(--ink);
+  padding:14px;
+  box-shadow: 4px 4px 0 var(--ink);
+  position:relative;
+}
+.dialog::after{
+  /* blinking cursor */
+  content:"▼";
+  position:absolute;right:14px;bottom:10px;
+  color:var(--gold);
+  animation: blink 0.9s steps(2) infinite;
+}
+@keyframes blink{0%,100%{opacity:0}50%{opacity:1}}
+.dialog .coach-portrait{
+  width:72px;height:72px;
+  background:var(--gb-dark);
+  border:3px solid var(--gb-light);
+  display:grid;place-items:center;
+}
+.dialog .who{font-family:'Press Start 2P';font-size:9px;color:var(--gold);margin-bottom:6px}
+.dialog .msg{font-size:16px;line-height:1.45;color:var(--gb-pale);max-width:54ch}
+.dialog .msg b{color:#fff}
+
+/* ---------- right column: badges + locker ---------- */
+.rail{display:flex;flex-direction:column;gap:18px}
+.rail h3{font-size:10px;margin-bottom:10px}
+
+.badge-wall{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;
+}
+.badge{
+  aspect-ratio:1/1;
+  border:3px solid var(--ink);
+  background:var(--paper);
+  display:grid;place-items:center;
+  font-family:'Press Start 2P';font-size:14px;color:var(--ink);
+  box-shadow: 3px 3px 0 var(--shadow);
+  position:relative;
+}
+.badge.earned{background:var(--gold)}
+.badge.earned.rare{background:var(--berry);color:#fff}
+.badge.earned.epic{background:var(--sky);color:#fff}
+.badge.locked{color:transparent;background:
+  repeating-linear-gradient(45deg, var(--paper) 0 6px, var(--paper-dark) 6px 12px);}
+.badge.locked::after{
+  content:"?";position:absolute;color:var(--shadow);
+  font-family:'Press Start 2P';font-size:14px;
+}
+
+.locker{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cos{
+  border:3px solid var(--ink);
+  background:var(--cream);
+  padding:8px;
+  box-shadow: 3px 3px 0 var(--shadow);
+  display:flex;flex-direction:column;gap:6px;align-items:center;
+}
+.cos .thumb{
+  width:100%;aspect-ratio:1;background:var(--gb-pale);
+  border:2px solid var(--ink);
+  display:grid;place-items:center;
+}
+.cos .n{font-family:'Silkscreen';font-size:11px;text-align:center}
+.cos .tag{font-family:'Press Start 2P';font-size:7px;color:var(--ink-soft)}
+.cos.new .tag{color:var(--berry)}
+
+/* footer / legend */
+.legend{
+  margin:0 24px 28px;
+  padding:12px 16px;
+  display:flex;justify-content:space-between;align-items:center;
+  background:var(--paper);
+  border:3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  font-family:'Silkscreen';font-size:12px;color:var(--ink-soft);
+}
+.legend kbd{
+  font-family:'Press Start 2P';font-size:8px;
+  background:var(--ink);color:var(--cream);
+  padding:3px 6px;border:2px solid var(--ink);
+  box-shadow: 2px 2px 0 var(--shadow);
+  margin:0 2px;
+}
+
+/* scanline overlay on dark panels for CRT hint */
+.frame--dark::after, .dialog::before, .hud-bar::after{
+  content:"";
+  position:absolute; inset:0; pointer-events:none;
+  background: repeating-linear-gradient(
+    to bottom, transparent 0 2px, rgba(0,0,0,.08) 2px 3px);
+  mix-blend-mode:multiply;
+}
+.hud-bar, .dialog{position:relative;overflow:hidden}
+
+/* toast / new-unlock popup */
+.toast{
+  position:fixed; right:24px; bottom:24px;
+  background:var(--gb-darkest); color:var(--gb-pale);
+  border:3px solid var(--ink); box-shadow: 4px 4px 0 var(--ink);
+  padding:12px 14px 14px;
+  font-family:'Press Start 2P';font-size:9px;
+  max-width:260px;
+  animation: slide .4s steps(4) both;
+}
+.toast b{color:var(--gold)}
+@keyframes slide{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+</style>
+</head>
+<body>
+
+<!-- ============= HUD BAR ============= -->
+<header class="hud-bar hud">
+  <span class="logo"><span class="logo-mark"></span><span class="title">MEAL&nbsp;QUEST</span></span>
+  <span><span class="k">DAY</span><span class="v">042</span>&nbsp;&nbsp;<span class="sep">/</span>&nbsp;&nbsp;<span class="k">ZONE</span><span class="v">YVR&nbsp;TERMINAL&nbsp;B</span></span>
+  <span><span class="heart">♥♥♥</span><span style="color:var(--gb-mid)">♡♡</span></span>
+  <span><span class="k">XP</span><span class="v">2,480</span></span>
+  <span><span class="k">GOLD</span><span class="v" style="color:var(--gold)">★&nbsp;138</span></span>
+</header>
+
+<main class="stage">
+
+  <!-- ============= LEFT: CHARACTER ============= -->
+  <aside class="char-panel">
+
+    <section class="char-window">
+      <span class="label">★ PARTY</span>
+      <div class="scene" aria-label="Your pixel character in a sunny meadow">
+        <span class="sparkle s1">+</span>
+        <span class="sparkle s2">*</span>
+
+        <!-- Pixel character: a little adventurer with a water canteen.
+             Drawn as an SVG grid of 4px squares for crispness. -->
+        <svg class="sprite" width="96" height="112" viewBox="0 0 24 28" shape-rendering="crispEdges" aria-hidden="true">
+          <!-- shadow -->
+          <rect x="4" y="27" width="16" height="1" fill="#4a3f2a" opacity=".4"/>
+          <!-- hair -->
+          <rect x="7" y="2" width="10" height="1" fill="#2b2316"/>
+          <rect x="6" y="3" width="12" height="2" fill="#3a2a18"/>
+          <rect x="6" y="5" width="2"  height="2" fill="#3a2a18"/>
+          <rect x="16" y="5" width="2" height="2" fill="#3a2a18"/>
+          <!-- face -->
+          <rect x="8" y="5" width="8" height="4" fill="#f1c59a"/>
+          <rect x="9" y="7" width="1" height="1" fill="#2b2316"/>
+          <rect x="14" y="7" width="1" height="1" fill="#2b2316"/>
+          <rect x="11" y="8" width="2" height="1" fill="#c65d5d"/>
+          <!-- neck -->
+          <rect x="10" y="9" width="4" height="1" fill="#d9a77a"/>
+          <!-- body / green tunic -->
+          <rect x="6" y="10" width="12" height="6" fill="#2d5039"/>
+          <rect x="6" y="10" width="12" height="1" fill="#5f8c4b"/>
+          <rect x="11" y="11" width="2" height="4" fill="#e6b94a"/> <!-- belt buckle stripe -->
+          <!-- arms -->
+          <rect x="4" y="11" width="2" height="5" fill="#2d5039"/>
+          <rect x="18" y="11" width="2" height="5" fill="#2d5039"/>
+          <rect x="4" y="16" width="2" height="1" fill="#f1c59a"/>
+          <rect x="18" y="16" width="2" height="1" fill="#f1c59a"/>
+          <!-- canteen on right hand -->
+          <rect x="19" y="17" width="3" height="4" fill="#6ba4c9"/>
+          <rect x="19" y="17" width="3" height="1" fill="#a5cde4"/>
+          <rect x="20" y="16" width="1" height="1" fill="#2b2316"/>
+          <!-- belt -->
+          <rect x="6" y="16" width="12" height="1" fill="#1a2f22"/>
+          <!-- legs -->
+          <rect x="7" y="17" width="4" height="6" fill="#4a3f2a"/>
+          <rect x="13" y="17" width="4" height="6" fill="#4a3f2a"/>
+          <!-- boots -->
+          <rect x="6" y="23" width="5" height="3" fill="#2b2316"/>
+          <rect x="13" y="23" width="5" height="3" fill="#2b2316"/>
+          <rect x="6" y="25" width="5" height="1" fill="#4a3f2a"/>
+          <rect x="13" y="25" width="5" height="1" fill="#4a3f2a"/>
+          <!-- tunic trim -->
+          <rect x="6" y="15" width="12" height="1" fill="#a9c472"/>
+        </svg>
+      </div>
+
+      <div class="char-id">
+        <span class="lvl-chip">LV 12</span>
+        <div>
+          <div class="name">NATE&nbsp;THE&nbsp;NOMAD</div>
+          <div class="role">Class: Traveler · Subclass: Red-eye Regular</div>
+        </div>
+      </div>
+
+      <div class="stats" style="margin-top:14px">
+        <div class="stat"><span class="k">HP</span><span class="bar hp"><i style="width:76%"></i></span><span class="v">7 / 9</span></div>
+        <div class="stat"><span class="k">HYDRO</span><span class="bar hydro"><i style="width:55%"></i></span><span class="v">3 / 6</span></div>
+        <div class="stat"><span class="k">FUEL</span><span class="bar fuel"><i style="width:42%"></i></span><span class="v">2 / 5</span></div>
+        <div class="stat"><span class="k">XP</span><span class="bar xp"><i style="width:68%"></i></span><span class="v">Lv&nbsp;13&nbsp;→</span></div>
+      </div>
+    </section>
+
+    <!-- active buffs / debuffs -->
+    <section class="frame" aria-label="Active effects">
+      <h3 class="hud" style="font-size:9px;margin-bottom:10px">✦ EFFECTS</h3>
+      <div style="display:flex;flex-direction:column;gap:8px;font-family:'Silkscreen';font-size:13px">
+        <div style="display:flex;justify-content:space-between"><span>☀ EARLY BIRD</span><span style="color:var(--gb-mid)">+10%&nbsp;XP</span></div>
+        <div style="display:flex;justify-content:space-between"><span>✈ JETLAG</span><span style="color:var(--berry)">−1&nbsp;HP/hr</span></div>
+        <div style="display:flex;justify-content:space-between"><span>♨ LAYOVER</span><span style="color:var(--sunset)">FUEL&nbsp;choice</span></div>
+      </div>
+    </section>
+  </aside>
+
+  <!-- ============= MIDDLE: QUEST BOARD ============= -->
+  <section class="board">
+    <div class="today-strip">
+      <span class="pill">TODAY</span>
+      <span>SAT 18·APR — <b>3 quests</b> pending · next event: <b>12:40 flight YVR→SFO</b></span>
+      <span class="tick" style="margin-left:auto">SAVE&nbsp;●</span>
+    </div>
+
+    <h2>Active Quests</h2>
+    <div class="quest-grid">
+
+      <article class="quest q-water">
+        <div class="icon">♒</div>
+        <div class="title">HYDRA HUNTER</div>
+        <div class="sub">Drink 6 cups of water before boarding.</div>
+        <div class="progress"><i style="width:50%"></i></div>
+        <div class="meta"><span>3 / 6 cups</span><span class="xp">+40 XP</span></div>
+        <div class="btnrow">
+          <button class="btn go">✓ DONE</button>
+          <button class="btn later">⟲ LATER</button>
+          <button class="btn skip">✕ SKIP</button>
+        </div>
+      </article>
+
+      <article class="quest q-veg">
+        <div class="icon">♣</div>
+        <div class="title">GREEN GAMBIT</div>
+        <div class="sub">Veg-forward meal at a terminal eatery — try Field Fare (Gate B12).</div>
+        <div class="progress"><i style="width:0%"></i></div>
+        <div class="meta"><span>0 / 1 meal</span><span class="xp">+80 XP</span></div>
+        <div class="btnrow">
+          <button class="btn go">✓ DONE</button>
+          <button class="btn later">⟲ LATER</button>
+          <button class="btn skip">✕ SKIP</button>
+        </div>
+      </article>
+
+      <article class="quest q-move">
+        <div class="icon">➤</div>
+        <div class="title">CONCOURSE DASH</div>
+        <div class="sub">Walk to the far gate instead of the tram. 1,800 steps.</div>
+        <div class="progress"><i style="width:82%"></i></div>
+        <div class="meta"><span>1,480 / 1,800</span><span class="xp">+35 XP</span></div>
+        <div class="btnrow">
+          <button class="btn go">✓ DONE</button>
+          <button class="btn later">⟲ LATER</button>
+          <button class="btn skip">✕ SKIP</button>
+        </div>
+      </article>
+
+      <article class="quest q-sleep">
+        <div class="icon">☾</div>
+        <div class="title">LIGHTS OUT</div>
+        <div class="sub">In-seat wind-down before 23:00 local. No screens after dinner.</div>
+        <div class="progress"><i style="width:100%"></i></div>
+        <div class="meta"><span style="color:var(--gb-mid);font-weight:700">COMPLETE ✓</span><span class="xp">+60 XP</span></div>
+        <div class="btnrow">
+          <button class="btn go" disabled style="opacity:.55;cursor:default">CLAIMED</button>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- NPC / coach dialog -->
+    <div class="dialog">
+      <div class="coach-portrait" aria-hidden="true">
+        <!-- mini sprite: coach "Sage" -->
+        <svg width="56" height="56" viewBox="0 0 14 14" shape-rendering="crispEdges">
+          <rect x="3" y="1" width="8" height="2" fill="#e6b94a"/>
+          <rect x="2" y="2" width="10" height="3" fill="#f5ecd0"/>
+          <rect x="4" y="4" width="1" height="1" fill="#2b2316"/>
+          <rect x="9" y="4" width="1" height="1" fill="#2b2316"/>
+          <rect x="6" y="6" width="2" height="1" fill="#c65d5d"/>
+          <rect x="2" y="6" width="10" height="5" fill="#2d5039"/>
+          <rect x="2" y="6" width="10" height="1" fill="#5f8c4b"/>
+          <rect x="6" y="8" width="2" height="2" fill="#e6b94a"/>
+          <rect x="2" y="11" width="10" height="2" fill="#1a2f22"/>
+        </svg>
+      </div>
+      <div>
+        <div class="who">SAGE · your ambient coach</div>
+        <div class="msg">Your flight boards in <b>42 minutes</b>. I spotted <b>Field Fare</b> at Gate B12 — bowls with lentils &amp; roasted squash will land you <b>Green Gambit</b> plus a hydration bump. Want me to pin directions?</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============= RIGHT: REWARDS RAIL ============= -->
+  <aside class="rail">
+    <section class="frame">
+      <h3 class="hud">✦ BADGE WALL</h3>
+      <div class="badge-wall" aria-label="Badges earned and locked">
+        <div class="badge earned">★</div>
+        <div class="badge earned rare">♥</div>
+        <div class="badge earned">♒</div>
+        <div class="badge earned">✈</div>
+        <div class="badge earned epic">♛</div>
+        <div class="badge locked"></div>
+        <div class="badge earned">☀</div>
+        <div class="badge locked"></div>
+        <div class="badge locked"></div>
+        <div class="badge earned">♣</div>
+        <div class="badge locked"></div>
+        <div class="badge locked"></div>
+      </div>
+      <p class="mono" style="font-size:11px;color:var(--ink-soft);margin-top:10px">7 / 12 collected · next: <b style="color:var(--ink)">SEVEN-DAY SAGE</b></p>
+    </section>
+
+    <section class="frame frame--dark">
+      <h3 class="hud" style="color:var(--gold)">✦ COSMETIC LOCKER</h3>
+      <div class="locker" style="margin-top:10px">
+
+        <div class="cos new">
+          <div class="thumb">
+            <!-- tiny hat -->
+            <svg width="44" height="44" viewBox="0 0 11 11" shape-rendering="crispEdges">
+              <rect x="3" y="2" width="5" height="1" fill="#b84a5e"/>
+              <rect x="2" y="3" width="7" height="3" fill="#c65d5d"/>
+              <rect x="1" y="6" width="9" height="1" fill="#2b2316"/>
+              <rect x="5" y="1" width="1" height="1" fill="#e6b94a"/>
+            </svg>
+          </div>
+          <div class="n">Explorer Cap</div>
+          <div class="tag">NEW!</div>
+        </div>
+
+        <div class="cos">
+          <div class="thumb">
+            <svg width="44" height="44" viewBox="0 0 11 11" shape-rendering="crispEdges">
+              <rect x="2" y="2" width="7" height="7" fill="#6ba4c9"/>
+              <rect x="2" y="2" width="7" height="1" fill="#a5cde4"/>
+              <rect x="4" y="5" width="3" height="3" fill="#dfe9ba"/>
+            </svg>
+          </div>
+          <div class="n">Canteen+</div>
+          <div class="tag">EQUIPPED</div>
+        </div>
+
+        <div class="cos">
+          <div class="thumb">
+            <svg width="44" height="44" viewBox="0 0 11 11" shape-rendering="crispEdges">
+              <rect x="2" y="3" width="7" height="5" fill="#2d5039"/>
+              <rect x="2" y="3" width="7" height="1" fill="#5f8c4b"/>
+              <rect x="4" y="5" width="3" height="1" fill="#e6b94a"/>
+            </svg>
+          </div>
+          <div class="n">Forager Tunic</div>
+          <div class="tag">OWNED</div>
+        </div>
+
+        <div class="cos" style="opacity:.45">
+          <div class="thumb">
+            <svg width="44" height="44" viewBox="0 0 11 11" shape-rendering="crispEdges">
+              <rect x="3" y="2" width="5" height="7" fill="#8b7c5d"/>
+              <rect x="4" y="4" width="3" height="3" fill="#2b2316"/>
+            </svg>
+          </div>
+          <div class="n">Stormcloak</div>
+          <div class="tag">500 XP LOCK</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="frame">
+      <h3 class="hud">✦ CHALLENGE</h3>
+      <p style="font-family:'Silkscreen';font-size:13px;color:var(--ink);margin-bottom:8px">7-DAY HYDRATION RUN</p>
+      <div class="bar hydro" style="height:14px"><i style="width:57%"></i></div>
+      <p class="mono" style="font-size:11px;color:var(--ink-soft);margin-top:8px">Day 4 of 7 · joined 14·Apr · reward: <b style="color:var(--berry)">Azure Canteen skin</b></p>
+    </section>
+  </aside>
+</main>
+
+<footer class="legend">
+  <span>controls: <kbd>↑↓</kbd> nav · <kbd>A</kbd> check-in · <kbd>B</kbd> later · <kbd>START</kbd> swap quest</span>
+  <span>v0.1 · field guide · © Meal Quest Party</span>
+</footer>
+
+<!-- little unlock toast to sell the vibe -->
+<div class="toast" role="status">
+  <div>★ NEW&nbsp;ITEM</div>
+  <div style="margin-top:6px;color:var(--gb-pale);font-family:'Pixelify Sans';font-size:14px">
+    You found the <b style="color:var(--gold)">Explorer Cap</b>! Equip it from the locker.
+  </div>
+</div>
+
+</body>
+</html>
