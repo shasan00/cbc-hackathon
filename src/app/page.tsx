@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { signIn, useSession } from "@/lib/auth-client";
+import { signIn, signUp, useSession } from "@/lib/auth-client";
 import { PortraitFrame, Sprite } from "@/components/sprite";
 
 export default function Home() {
@@ -10,6 +10,40 @@ export default function Home() {
   const { data: session, isPending } = useSession();
   const [checkedProfile, setCheckedProfile] = useState(false);
   const [hasProfile, setHasProfile] = useState(false);
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [authBusy, setAuthBusy] = useState(false);
+
+  async function handleEmailAuth(e: React.FormEvent) {
+    e.preventDefault();
+    setAuthError(null);
+    setAuthBusy(true);
+    try {
+      if (mode === "signup") {
+        const { error } = await signUp.email({
+          email,
+          password,
+          name: name || email.split("@")[0],
+          callbackURL: "/",
+        });
+        if (error) throw new Error(error.message ?? "Sign up failed");
+      } else {
+        const { error } = await signIn.email({
+          email,
+          password,
+          callbackURL: "/",
+        });
+        if (error) throw new Error(error.message ?? "Sign in failed");
+      }
+    } catch (err) {
+      setAuthError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setAuthBusy(false);
+    }
+  }
 
   useEffect(() => {
     if (isPending || !session?.user) {
@@ -91,15 +125,79 @@ export default function Home() {
                 LOADING…
               </p>
             ) : !signedIn ? (
-              <button
-                onClick={() =>
-                  signIn.social({ provider: "google", callbackURL: "/" })
-                }
-                className="pixel-btn pixel-btn-gold anim-press-pulse"
-                style={{ fontSize: "12px", padding: "14px 22px" }}
-              >
-                ▶ PRESS START
-              </button>
+              <div className="flex w-[min(90%,360px)] flex-col gap-3">
+                <form onSubmit={handleEmailAuth} className="flex flex-col gap-2">
+                  {mode === "signup" && (
+                    <input
+                      type="text"
+                      placeholder="NAME"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="border-[3px] border-ink bg-paper px-3 py-2 font-press text-[10px] text-ink"
+                    />
+                  )}
+                  <input
+                    type="email"
+                    required
+                    placeholder="EMAIL"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="border-[3px] border-ink bg-paper px-3 py-2 font-press text-[10px] text-ink"
+                  />
+                  <input
+                    type="password"
+                    required
+                    minLength={8}
+                    placeholder="PASSWORD (MIN 8)"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="border-[3px] border-ink bg-paper px-3 py-2 font-press text-[10px] text-ink"
+                  />
+                  {authError && (
+                    <p className="font-press text-[9px] text-berry">
+                      {authError.toUpperCase()}
+                    </p>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={authBusy}
+                    className="pixel-btn pixel-btn-gold anim-press-pulse"
+                    style={{ fontSize: "12px", padding: "14px 22px" }}
+                  >
+                    {authBusy
+                      ? "…"
+                      : mode === "signup"
+                      ? "▶ CREATE ACCOUNT"
+                      : "▶ PRESS START"}
+                  </button>
+                </form>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setMode(mode === "signup" ? "signin" : "signup")
+                  }
+                  className="font-press text-[9px] text-ink-soft underline"
+                >
+                  {mode === "signup"
+                    ? "HAVE AN ACCOUNT? SIGN IN"
+                    : "NEW PLAYER? CREATE ACCOUNT"}
+                </button>
+                <div className="flex items-center gap-2">
+                  <div className="h-[2px] flex-1 bg-ink-soft" />
+                  <span className="font-press text-[8px] text-ink-soft">OR</span>
+                  <div className="h-[2px] flex-1 bg-ink-soft" />
+                </div>
+                <button
+                  type="button"
+                  onClick={() =>
+                    signIn.social({ provider: "google", callbackURL: "/" })
+                  }
+                  className="pixel-btn"
+                  style={{ fontSize: "10px", padding: "10px 14px" }}
+                >
+                  SIGN IN WITH GOOGLE
+                </button>
+              </div>
             ) : showTitleScreen ? (
               <button
                 onClick={() => router.push("/onboarding")}
@@ -116,7 +214,7 @@ export default function Home() {
             <p className="font-silk text-[12px] text-ink-soft">
               {signedIn
                 ? "Let's build your character."
-                : "Sign in with Google to create your adventurer."}
+                : "Sign in or create an account to begin your adventure."}
             </p>
           </div>
         </div>
