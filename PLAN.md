@@ -150,16 +150,16 @@ Syncs: two 10-minute standups/day + one full integration checkpoint at ~hour 20.
 ## Build order (48-hour plan)
 
 **Hours 0–6 — Foundation**
-1. Next.js app scaffolded, Tailwind + shadcn, deployed to Vercel.
-2. Supabase project + schema migrated.
-3. Better Auth with Google provider + Calendar scopes; sign-in creates user row.
-4. Anthropic SDK installed; one working API route calls Claude with prompt caching on.
+1. ✅ Next.js app scaffolded, Tailwind + shadcn. _(Vercel deploy skipped for hackathon.)_
+2. ✅ Supabase project + schema migrated. Better Auth tables (`user`, `session`, `account`, `verification`) + app tables (`profiles`, `quests`, `challenges`, `quest_events`, `user_badges`, `unlocks`, `xp_ledger`, `whatsapp_messages`). RLS enabled with no policies; server writes only via service role. Schema lives at `supabase/schema.sql`.
+3. ✅ Better Auth with Google provider + Calendar scopes; sign-in creates user row. Verified end-to-end with real Google account.
+4. ⏳ Anthropic SDK installed; **API route + prompt caching not yet built.**
 
 **Hours 6–16 — Core loops**
-5. Onboarding flow writes to `profiles`.
-6. Google Calendar fetch helper (next 7 days).
-7. Google Places integration (lat/lng -> categorized places).
-8. Claude recommendation endpoint (profile + calendar + location -> venue-aware rec).
+5. ⏳ Onboarding flow writes to `profiles`. _(Not started.)_
+6. ✅ Google Calendar fetch helper (next 7 days). `src/lib/google-calendar.ts` + `GET /api/calendar/upcoming`. Token auto-refresh handled by Better Auth's `getAccessToken`.
+7. ⏳ Google Places integration (lat/lng -> categorized places). _(Not started.)_
+8. ⏳ Claude recommendation endpoint (profile + calendar + location -> venue-aware rec). _(Not started.)_
 
 **Hours 16–28 — Quest system + web UI**
 9. Quest assignment logic with 6–8 quest templates in code.
